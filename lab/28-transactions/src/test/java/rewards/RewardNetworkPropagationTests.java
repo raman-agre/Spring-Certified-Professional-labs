@@ -55,7 +55,7 @@ public class RewardNetworkPropagationTests {
 	@Autowired
 	public void initJdbcTemplate(DataSource dataSource) {
 		this.template = new JdbcTemplate(dataSource);
-	}
+}
 
 	@Test
 	public void testPropagation() {
