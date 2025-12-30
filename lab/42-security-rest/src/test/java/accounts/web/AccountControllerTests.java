@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -46,7 +47,6 @@ public class AccountControllerTests {
     private AccountService accountService;
 
     @Test
-    @Disabled
     @WithMockUser(roles = {"INVALID"})
     void accountSummary_with_invalid_role_should_return_403() throws Exception {
 
@@ -55,7 +55,6 @@ public class AccountControllerTests {
     }
 
     @Test
-    @Disabled
     @WithMockUser( roles = {"USER"})
     public void accountDetails_with_USER_role_should_return_200() throws Exception {
 
@@ -74,7 +73,6 @@ public class AccountControllerTests {
     }
 
     @Test
-    @Disabled
     @WithMockUser(username = "user", password = "user")
     public void accountDetails_with_user_credentials_should_return_200() throws Exception {
 
@@ -93,7 +91,6 @@ public class AccountControllerTests {
     }
 
     @Test
-    @Disabled
     @WithMockUser(username = "admin", password = "admin")
     public void accountDetails_with_admin_credentials_should_return_200() throws Exception {
 
@@ -112,7 +109,6 @@ public class AccountControllerTests {
     }
 
     @Test
-    @Disabled
     @WithMockUser(username = "superadmin", password = "superadmin")
     public void accountDetails_with_superadmin_credentials_should_return_200() throws Exception {
 
@@ -132,7 +128,6 @@ public class AccountControllerTests {
     }
 
     @Test
-    @Disabled
     @WithMockUser(roles = {"USER"})
     public void accountDetailsFail_test_with_USER_role_should_proceed_successfully() throws Exception {
 
@@ -147,7 +142,6 @@ public class AccountControllerTests {
     }
 
     @Test
-    @Disabled
     @WithMockUser(roles = {"ADMIN"})
     public void accountSummary_with_ADMIN_role_should_return_200() throws Exception {
 
@@ -165,7 +159,6 @@ public class AccountControllerTests {
     }
 
     @Test
-    @Disabled
     @WithMockUser(roles = {"ADMIN", "SUPERADMIN"})
     public void createAccount_with_ADMIN_or_SUPERADMIN_role_should_return_201() throws Exception {
 
@@ -191,9 +184,15 @@ public class AccountControllerTests {
     //    this testing because security failure will prevent
     //    calling a method of a dependency.)
     @Test
+    @WithMockUser(roles = "USER")
     public void createAccount_with_USER_role_should_return_403() throws Exception {
 
+        Account testAccount = new Account("1234512345", "Mary Jones");
+        testAccount.setEntityId(21L);
 
+        mockMvc.perform(post("/account").contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(testAccount)).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
 
     }
 
