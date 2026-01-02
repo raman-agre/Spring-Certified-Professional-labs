@@ -10,7 +10,11 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // TODO-12a: Perform method security testing with a running server
 // - Take some time to understand what each test is for
@@ -24,7 +28,6 @@ class AccountServiceMethodSecurityTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    @Disabled
     void getAuthoritiesForUser_should_return_403_for_user() {
 
         ResponseEntity<String> responseEntity = restTemplate.withBasicAuth("user", "user")
@@ -34,7 +37,6 @@ class AccountServiceMethodSecurityTest {
     }
 
     @Test
-    @Disabled
     void getAuthoritiesForUser_should_return_authorities_for_admin() {
 
         String[] authorities = restTemplate.withBasicAuth("admin", "admin")
@@ -53,6 +55,13 @@ class AccountServiceMethodSecurityTest {
     @Test
     public void getAuthoritiesForUser_should_return_authorities_for_superadmin() {
 
+        String[] authorities = restTemplate.withBasicAuth("superadmin", "superadmin")
+                .getForObject("/authorities?username=superadmin", String[].class);
+
+        assertEquals(3, authorities.length);
+        assertTrue(Arrays.toString(authorities).contains("ROLE_SUPERADMIN"));
+        assertTrue(Arrays.toString(authorities).contains("ROLE_ADMIN"));
+        assertTrue(Arrays.toString(authorities).contains("ROLE_USER"));
 
 
     }
